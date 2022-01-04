@@ -7,16 +7,18 @@
 #include "ranktree.h"
 #include "player.h"
 #include "hashtable.h"
+#include "node.h"
 
 class Group {
     private:
     public:
         int groupId;
-        RankTree levelsTree;
+        std::shared_ptr<RankTree> levelsTree;
         int numOfPlayers;
-        HashTable<int, Player> levelZero;
+        std::shared_ptr<Node> levelZeroInGroup;
 
-        Group(const int groupId) : groupId(groupId), levelsTree(), numOfPlayers(0), levelZero() {}
+        Group(const int groupId) : groupId(groupId), levelsTree(), numOfPlayers(0),
+             levelZeroInGroup(levelsTree.root) {}
         Group() = default;
         ~Group() = default;     
 };

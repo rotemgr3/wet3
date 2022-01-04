@@ -8,6 +8,7 @@
 #include "level.h"
 #include "player.h"
 #include "map.h"
+#include "node.h"
 
 typedef enum {
     PM_SUCCESS = 0,
@@ -37,10 +38,13 @@ class PlayersManager {
         
     public:
         RankTree allLevelsTree;
-        UF<int, Group> Groups;
+        UF<Group> groups;
         HashTable<int, Player> allPlayers;
+        std::shared_ptr<Node> levelZero;
+        int k;
+        int scale;
 
-        PlayersManager();
+        PlayersManager(int k, int scale);
         ~PlayersManager() = default;
         PMStatusType AddPlayer(int playerId, int groupId, int score);
         PMStatusType RemovePlayer(int playerId);

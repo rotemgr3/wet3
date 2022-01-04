@@ -7,7 +7,8 @@ class Player {
         int playerId;
         int groupId;
         int level;
-        Player(const int playerId, const int groupId, const int level) : playerId(playerId), groupId(groupId), level(level) {}
+        int score;
+        Player(int playerId, int groupId, int score) : playerId(playerId), groupId(groupId), score(score), level(0) {}
         Player(const Player& player) = default;
         ~Player() = default;
 };

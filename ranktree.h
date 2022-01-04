@@ -222,7 +222,7 @@ std::shared_ptr<Node> RankTree::InsertAux(std::shared_ptr<Node> root,
 
 void RankTree::Remove(const int& key)
 {
-    if(!this->Find(key))
+    if(!this->Find(key) || key == 0)
         return;
     
     this->root = RankTree::RemoveAux(this->root, key);

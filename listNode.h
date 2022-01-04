@@ -8,7 +8,7 @@ class ListNode {
     public:
         keyT key;
         std::shared_ptr<dataT> data;
-        std::shared_ptr<ListNode<dataT>> next;
+        std::shared_ptr<ListNode<keyT, dataT>> next;
         ListNode(const keyT key, std::shared_ptr<dataT>& data) : key(key), data(data), next(nullptr) {}
         ~ListNode() = default; 
         ListNode(const ListNode<keyT,dataT>& copy) = default;    

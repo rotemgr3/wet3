@@ -6,6 +6,7 @@
 #include "listNode.h"
 #include <stdbool.h>
 
+
 template <class keyT, class dataT>
 class HashTable {
     private:
@@ -21,22 +22,22 @@ class HashTable {
         void Insert(keyT key, std::shared_ptr<dataT>& data);
         void Remove(keyT key);
         std::shared_ptr<dataT>& Get(keyT key);
-        bool HashTable<class keyT, class dataT>::IfExists(keyT key);
+        bool IfExists(keyT key);
 };
 
 template <class keyT, class dataT>
-HashTable<class keyT, class dataT>::HashTable() : m(3), size(0) {
+HashTable<keyT, dataT>::HashTable() : m(3), size(0) {
     arr = new std::shared_ptr<ListNode<keyT, dataT>>[m];
 }
 
 template <class keyT, class dataT>
-HashTable<class keyT, class dataT>::~HashTable() {
+HashTable<keyT, dataT>::~HashTable() {
     delete arr;
 }
 
 
 template <class keyT, class dataT>
-std::shared_ptr<dataT>& HashTable<class keyT, class dataT>::Get(keyT key) {
+std::shared_ptr<dataT>& HashTable<keyT, dataT>::Get(keyT key) {
     if (arr[key % m] == nullptr)
         return nullptr;
     
@@ -51,14 +52,14 @@ std::shared_ptr<dataT>& HashTable<class keyT, class dataT>::Get(keyT key) {
 }
 
 template <class keyT, class dataT>
-bool HashTable<class keyT, class dataT>::IfExists(keyT key) {
+bool HashTable<keyT, dataT>::IfExists(keyT key) {
     if (this->Get(key) != nullptr)
-        return True;
-    return False;
+        return true;
+    return false;
 }
 
 template <class keyT, class dataT>
-void HashTable<class keyT, class dataT>::Insert(keyT key, std::shared_ptr<dataT>& data) {
+void HashTable<keyT, dataT>::Insert(keyT key, std::shared_ptr<dataT>& data) {
     if (this->IfExists(key))
         return;
     
@@ -73,7 +74,7 @@ void HashTable<class keyT, class dataT>::Insert(keyT key, std::shared_ptr<dataT>
 }
 
 template <class keyT, class dataT>
-void HashTable<class keyT, class dataT>::Remove(keyT key) {
+void HashTable<keyT, dataT>::Remove(keyT key) {
     std::shared_ptr<ListNode<keyT, dataT>> curr = arr[key % m];
     while (curr != nullptr && curr->next != nullptr) {
         if (curr->next->key == key) {
@@ -89,14 +90,16 @@ void HashTable<class keyT, class dataT>::Remove(keyT key) {
 }
 
 template <class keyT, class dataT>
-void HashTable<class keyT, class dataT>::ChangeSize(bool expand) {
+void HashTable<keyT, dataT>::ChangeSize(bool expand) {
     int newM = m;
+    std::shared_ptr<ListNode<keyT, dataT>>* newArr;
+
     if (expand) {
         newM = m * 3;
-        std::shared_ptr<ListNode<keyT, dataT>>* newArr = new std::shared_ptr<ListNode<keyT, dataT>>[newM];
+        newArr = new std::shared_ptr<ListNode<keyT, dataT>>[newM];
     } else {
         newM = m / 3;
-        std::shared_ptr<ListNode<keyT, dataT>>* newArr = new std::shared_ptr<ListNode<keyT, dataT>>[newM];
+        newArr = new std::shared_ptr<ListNode<keyT, dataT>>[newM];
     }
 
     for (int i = 0; i < m; i++) {
