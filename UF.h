@@ -26,6 +26,7 @@ UF<dataT>::UF(int k) : k(k) {
     for (int i = 0; i < k; i++) {
         size[i] = 1;
         parent[i] = 0;
+        elements[i] = std::shared_ptr<dataT>(new dataT(k + 1));
     }
 }
 
@@ -38,11 +39,11 @@ UF<dataT>::~UF() {
 
 template <class dataT>
 std::shared_ptr<dataT>& UF<dataT>::Find(int elementId) {
-    int rout = elementId;
-    while (parent[rout - 1] != 0)
-        rout = parent[rout - 1];
+    int root = elementId;
+    while (parent[root - 1] != 0)
+        root = parent[root - 1];
     
-    int curr = elementId
+    int curr = elementId;
     while (curr != root) {
         int temp = parent[curr - 1];
         parent[curr - 1] = root;

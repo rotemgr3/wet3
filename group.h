@@ -15,10 +15,8 @@ class Group {
         int groupId;
         std::shared_ptr<RankTree> levelsTree;
         int numOfPlayers;
-        std::shared_ptr<Node> levelZeroInGroup;
 
-        Group(const int groupId) : groupId(groupId), levelsTree(), numOfPlayers(0),
-             levelZeroInGroup(levelsTree.root) {}
+        Group(const int groupId) : groupId(groupId), levelsTree(new RankTree()), numOfPlayers(0) {}
         Group() = default;
         ~Group() = default;     
 };

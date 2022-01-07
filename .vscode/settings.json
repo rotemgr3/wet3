@@ -12,7 +12,7 @@
         "cwchar": "cpp",
         "cwctype": "cpp",
         "deque": "cpp",
-        "unordered_map": "cpp",
+        "unordered_helper": "cpp",
         "vector": "cpp",
         "exception": "cpp",
         "fstream": "cpp",
@@ -34,6 +34,7 @@
         "utility": "cpp",
         "typeinfo": "cpp",
         "algorithm": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "unordered_map": "cpp"
     }
 }
