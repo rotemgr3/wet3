@@ -1,0 +1,20 @@
+Init done.
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+GetPlayersBound: 0 1
+AddPlayer: INVALID_INPUT
+ChangePlayerIDScore: SUCCESS
+IncreasePlayerIDLevel: SUCCESS
+ChangePlayerIDScore: SUCCESS
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+RemovePlayer: SUCCESS
+IncreasePlayerIDLevel: SUCCESS
+AddPlayer: SUCCESS
+RemovePlayer: SUCCESS
+AverageHighestPlayerLevelByGroup: 0.00
+AddPlayer: INVALID_INPUT
+AddPlayer: SUCCESS
+IncreasePlayerIDLevel: SUCCESS
+AddPlayer: SUCCESS
+RemovePlayer: INVALID_INPUT

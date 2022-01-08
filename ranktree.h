@@ -12,7 +12,7 @@ class RankTree {
     private:
         void InsertLevel(int levelId, std::shared_ptr<Level>& level);
         void RemoveLevel(int levelId);
-        std::shared_ptr<Level> GetLevel(int levelId);
+        std::shared_ptr<Level> GetLevel(int levelId) const;
         static std::shared_ptr<Node> InsertAux(std::shared_ptr<Node> root, 
                                                             std::shared_ptr<Node> toInsert); 
         static std::shared_ptr<Node> LLRotation(std::shared_ptr<Node>& root);
@@ -41,6 +41,9 @@ class RankTree {
         static Helper* MergeToArr(const RankTree& tree1, const RankTree& tree2);
         static int getPlayersBoundHelper(std::shared_ptr<Node> root, int score, int m, int * LowerBoundPlayers,int * HigherBoundPlayers);
         static std::shared_ptr<RankTree> ArrToRankTree(Helper* helper, int size, int oldSize);
+        static void testmerge1(std::shared_ptr<Node> root, const RankTree& tree1, const RankTree& tree2);
+        static void testmerge2(std::shared_ptr<Node> root, std::shared_ptr<RankTree> merged);
+
 
     public:
         std::shared_ptr<Node> root;
@@ -50,7 +53,7 @@ class RankTree {
         RankTree();
         RankTree(std::shared_ptr<Node> root, int size);
         ~RankTree() = default;
-        bool Find(int levelId);
+        bool Find(int levelId) const;
         void Remove(std::shared_ptr<Player> player);
         void Insert(std::shared_ptr<Player> player);
         static std::shared_ptr<RankTree> Merge(const RankTree& tree1, const RankTree& tree2, int groupId);

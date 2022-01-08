@@ -1,0 +1,7 @@
+Init done.
+AddPlayer: INVALID_INPUT
+AddPlayer: INVALID_INPUT
+AddPlayer: SUCCESS
+AverageHighestPlayerLevelByGroup: 0.00
+AddPlayer: INVALID_INPUT
+AverageHighestPlayerLevelByGroup: 0.00

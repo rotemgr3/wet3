@@ -2,8 +2,8 @@
 
 
 void Node::UpdateData() {    
-    this->numOfPlayers = Node::GetNumPlayers(this->left) + Node::GetNumPlayers(this->left) + this->playersInLevel;
-    this->sumOfLevels = Node::GetSumLevels(this->left) + Node::GetSumLevels(this->left) + this->levelId * this->playersInLevel;
+    this->numOfPlayers = Node::GetNumPlayers(this->left) + Node::GetNumPlayers(this->right) + this->playersInLevel;
+    this->sumOfLevels = Node::GetSumLevels(this->left) + Node::GetSumLevels(this->right) + this->levelId * this->playersInLevel;
     
     for (int i=0; i < 200; i++) {
         int countRight = 0, countLeft = 0;
@@ -20,11 +20,11 @@ void Node::UpdateSelfData(int groupId) {
     for (int i = 0; i < 200; i++)
         this->histInLevel[i] = 0;
 
-    for (int i = 0; i < this->level->playersTable.size; i++) {
+    for (int i = 0; i < this->level->playersTable.m; i++) {
         std::shared_ptr<ListNode<int, Player>> curr = this->level->playersTable.arr[i];
         while (curr) {
-            this->histInLevel[curr->data->score - 1]++;
-            curr->data->groupId = groupId;
+            this->histInLevel[((std::shared_ptr<Player>)(curr->data))->score - 1]++;
+            ((std::shared_ptr<Player>)(curr->data))->groupId = groupId;
             curr = curr->next;
         }
     }

@@ -1,0 +1,5 @@
+Init done.
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+AddPlayer: INVALID_INPUT

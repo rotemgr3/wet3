@@ -26,15 +26,15 @@ UF<dataT>::UF(int k) : k(k) {
     for (int i = 0; i < k; i++) {
         size[i] = 1;
         parent[i] = 0;
-        elements[i] = std::shared_ptr<dataT>(new dataT(k + 1));
+        elements[i] = std::shared_ptr<dataT>(new dataT(i + 1));
     }
 }
 
 template <class dataT>
 UF<dataT>::~UF() {
-    delete size;
-    delete parent;
-    delete elements;
+    delete [] size;
+    delete [] parent;
+    delete [] elements;
 }
 
 template <class dataT>

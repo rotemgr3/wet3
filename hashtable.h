@@ -5,6 +5,7 @@
 #include <memory>
 #include "listNode.h"
 #include <stdbool.h>
+#include <cassert>
 
 
 template <class keyT, class dataT>
@@ -23,8 +24,8 @@ class HashTable {
         ~HashTable();
         void Insert(keyT key, std::shared_ptr<dataT>& data);
         void Remove(keyT key);
-        std::shared_ptr<dataT> Get(keyT key);
-        bool IfExists(keyT key);
+        std::shared_ptr<dataT> Get(keyT key) const;
+        bool IfExists(keyT key) const;
         static std::shared_ptr<HashTable<keyT, dataT>> Merge(const HashTable<keyT, dataT>& ht1, const HashTable<keyT, dataT>& ht2);
 };
 
@@ -36,7 +37,7 @@ HashTable<keyT, dataT>::HashTable() : m(3), size(0) {
 template <class keyT, class dataT>
 HashTable<keyT, dataT>::HashTable(const HashTable<keyT, dataT>& copy) : m(copy.m), size(copy.size) {
     arr = new std::shared_ptr<ListNode<keyT, dataT>>[m];
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < m; i++) {
         std::shared_ptr<ListNode<keyT, dataT>> curr = copy.arr[i];
         while (curr) {
             std::shared_ptr<ListNode<keyT, dataT>> toAdd = std::shared_ptr<ListNode<keyT, dataT>>(new ListNode<keyT, dataT>(curr->key, curr->data));
@@ -51,13 +52,13 @@ HashTable<keyT, dataT>::HashTable(const HashTable<keyT, dataT>& copy) : m(copy.m
 template <class keyT, class dataT>
 HashTable<keyT, dataT>& HashTable<keyT, dataT>::operator=(const HashTable<keyT, dataT>& copy) {
     std::shared_ptr<ListNode<keyT, dataT>>* newArr = new std::shared_ptr<ListNode<keyT, dataT>>[copy.m];
-    for (int i = 0; i < copy.size; i++) {
+    for (int i = 0; i < copy.m; i++) {
         std::shared_ptr<ListNode<keyT, dataT>> curr = copy.arr[i];
         while (curr) {
             std::shared_ptr<ListNode<keyT, dataT>> toAdd = std::shared_ptr<ListNode<keyT, dataT>>(new ListNode<keyT, dataT>(curr->key, curr->data));
             std::shared_ptr<ListNode<keyT, dataT>> head = newArr[curr->key % copy.m];
             toAdd->next = head;
-            newArr[curr->key % m] = std::make_shared<ListNode<keyT, dataT>>(*toAdd);
+            newArr[curr->key % copy.m] = std::make_shared<ListNode<keyT, dataT>>(*toAdd);
             curr = curr->next;
         }
     }
@@ -77,10 +78,7 @@ HashTable<keyT, dataT>::~HashTable() {
 
 
 template <class keyT, class dataT>
-std::shared_ptr<dataT> HashTable<keyT, dataT>::Get(keyT key) {
-    if (arr[key % m] == nullptr)
-        return nullptr;
-    
+std::shared_ptr<dataT> HashTable<keyT, dataT>::Get(keyT key) const {
     std::shared_ptr<ListNode<keyT, dataT>> curr = arr[key % m];
     while (curr != nullptr) {
         if (curr->key == key)
@@ -92,7 +90,7 @@ std::shared_ptr<dataT> HashTable<keyT, dataT>::Get(keyT key) {
 }
 
 template <class keyT, class dataT>
-bool HashTable<keyT, dataT>::IfExists(keyT key) {
+bool HashTable<keyT, dataT>::IfExists(keyT key) const {
     if (this->Get(key) != nullptr)
         return true;
     return false;
@@ -111,21 +109,31 @@ void HashTable<keyT, dataT>::Insert(keyT key, std::shared_ptr<dataT>& data) {
 
     if (size == m)
         this->ChangeSize(true);
+    
+    assert(this->Get(key) != nullptr);
 }
 
 template <class keyT, class dataT>
 void HashTable<keyT, dataT>::Remove(keyT key) {
+    if (!this->IfExists(key))
+        return;
+
     std::shared_ptr<ListNode<keyT, dataT>> curr = arr[key % m];
-    while (curr != nullptr && curr->next != nullptr) {
-        if (curr->next->key == key) {
-            curr->next = curr->next->next;
-            break;
+    if (curr->key == key) {
+            arr[key % m] = curr->next;
+    }
+    else {
+        while (curr != nullptr && curr->next != nullptr) {
+            if (curr->next->key == key) {
+                curr->next = curr->next->next;
+                break;
+            }
+            curr = curr->next;
         }
-        curr = curr->next;
     }
 
     size--;
-    if ((double)(size / m) <= 1/9 && size != 0)
+    if (((double)size / m) <= 1/9 && size != 0)
         this->ChangeSize(false);
 }
 
@@ -152,6 +160,36 @@ void HashTable<keyT, dataT>::ChangeSize(bool expand) {
             curr = curr->next;
         }
     }
+    //------------------------------tests-----------------------------------------------
+    for (int i = 0; i < m; i++) {
+        std::shared_ptr<ListNode<keyT, dataT>> curr = arr[i];
+        while (curr != nullptr) {
+                std::shared_ptr<ListNode<keyT, dataT>> currNew = newArr[curr->key % newM];
+                while (currNew != nullptr) {
+                    if (curr->key != currNew->key)
+                        currNew = currNew->next;
+                    else
+                        break;
+                }
+                assert(curr->key == currNew->key);
+            curr = curr->next;
+        }
+    }
+    for (int i = 0; i < newM; i++) {
+        std::shared_ptr<ListNode<keyT, dataT>> curr = newArr[i];
+        while (curr != nullptr) {
+                std::shared_ptr<ListNode<keyT, dataT>> currNew = arr[curr->key % m];
+                while (currNew != nullptr) {
+                    if (curr->key != currNew->key)
+                        currNew = currNew->next;
+                    else
+                        break;
+                }
+                assert(curr->key == currNew->key);
+            curr = curr->next;
+        }
+    }
+
     this->m = newM;
 
     delete [] this->arr;
@@ -161,7 +199,7 @@ void HashTable<keyT, dataT>::ChangeSize(bool expand) {
 template <class keyT, class dataT>
 std::shared_ptr<HashTable<keyT, dataT>> HashTable<keyT, dataT>::Merge(const HashTable<keyT, dataT>& ht1, const HashTable<keyT, dataT>& ht2) {
     std::shared_ptr<HashTable<keyT, dataT>> merged = std::shared_ptr<HashTable<keyT, dataT>>(new HashTable<keyT, dataT>());
-    for (int i = 0; i < ht1.size; i++) {
+    for (int i = 0; i < ht1.m; i++) {
         std::shared_ptr<ListNode<keyT, dataT>> curr = ht1.arr[i];
         while (curr) {
             merged->Insert(curr->key, curr->data);
@@ -169,14 +207,40 @@ std::shared_ptr<HashTable<keyT, dataT>> HashTable<keyT, dataT>::Merge(const Hash
         }
     }
 
-    for (int i = 0; i < ht2.size; i++) {
+    for (int i = 0; i < ht2.m; i++) {
         std::shared_ptr<ListNode<keyT, dataT>> curr = ht2.arr[i];
         while (curr) {
             merged->Insert(curr->key, curr->data);
             curr = curr->next;
         }
     }
-        
+    //-----------------------tests-----------------------------------
+    for (int i = 0; i < merged->m; i++) {
+        std::shared_ptr<ListNode<keyT, dataT>> curr = merged->arr[i];
+        while (curr) {
+            assert(ht1.IfExists(curr->key) || ht2.IfExists(curr->key));
+            curr = curr->next;
+        }
+    }
+
+    for (int i = 0; i < ht1.m; i++) {
+        std::shared_ptr<ListNode<keyT, dataT>> curr = ht1.arr[i];
+        while (curr) {
+            assert(merged->IfExists(curr->key));
+            curr = curr->next;
+        }
+    }
+
+    for (int i = 0; i < ht2.m; i++) {
+        std::shared_ptr<ListNode<keyT, dataT>> curr = ht2.arr[i];
+        while (curr) {
+            assert(merged->IfExists(curr->key));
+            curr = curr->next;
+        }
+    }
+
+
+
     return merged;
 }
 

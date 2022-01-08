@@ -14,6 +14,8 @@ PMStatusType PlayersManager::MergeGroups(int groupId1, int groupId2) {
     try {
         std::shared_ptr<Group> group1 = this->groups.Find(groupId1);
         std::shared_ptr<Group> group2 = this->groups.Find(groupId2);
+        if (group1->groupId == group2->groupId)
+            return PM_SUCCESS;
         this->groups.Union(group1->groupId, group2->groupId);
         group1->levelsTree = std::shared_ptr<RankTree>(RankTree::Merge(*group1->levelsTree, *group2->levelsTree, this->groups.Find(groupId1)->groupId));
         group1->numOfPlayers = group1->numOfPlayers + group2->numOfPlayers;
@@ -39,6 +41,7 @@ PMStatusType PlayersManager::AddPlayer(int playerId, int groupId, int score, int
         this->allPlayers.Insert(playerId, toInsert);
         this->allLevelsTree.Insert(toInsert);
         this->groups.Find(groupId)->levelsTree->Insert(toInsert);
+        this->groups.Find(groupId)->numOfPlayers++;
 
     } catch (std::bad_alloc& error) {
         return PM_ALLOCATION_ERROR;
@@ -54,7 +57,6 @@ PMStatusType PlayersManager::RemovePlayer(int playerId) {
     std::shared_ptr<Player> toRemove = this->allPlayers.Get(playerId);
     if (!toRemove)
         return PM_FAILURE;
-
     
     this->allPlayers.Remove(playerId);
     this->allLevelsTree.Remove(toRemove);

@@ -1,4 +1,5 @@
 #include "ranktree.h"
+#include <cassert>
 
 RankTree::RankTree() : root(nullptr), levelZero(new Node(0, std::shared_ptr<Level>(new Level(0)))), size(0) {
 }
@@ -131,7 +132,7 @@ void RankTree::Remove(std::shared_ptr<Player> player) {
         this->RemoveLevel(curr->levelId);
 }
 
-bool RankTree::Find(int levelId)
+bool RankTree::Find(int levelId) const
 {
     if(this->GetLevel(levelId) == nullptr)
         return false;
@@ -206,7 +207,7 @@ std::shared_ptr<Node> RankTree::FindNextInOrder(std::shared_ptr<Node> root)
     return root;
 }
 
-std::shared_ptr<Level> RankTree::GetLevel(int levelId)
+std::shared_ptr<Level> RankTree::GetLevel(int levelId) const
 {
     std::shared_ptr<Node> curr = root;
     while(curr != nullptr)
@@ -323,7 +324,7 @@ int RankTree::GetMaxLevel() //assumes that the ranktree isn't empty
 
 int RankTree::GetMinLevel() //assumes that the ranktree isn't empty
 {   
-    if (this->levelZero->numOfPlayers > 0)
+    if (this->levelZero->playersInLevel > 0)
         return 0;
 
     std::shared_ptr<Node> curr = this->root;
@@ -343,7 +344,7 @@ void RankTree::GetPercentOfPlayersWithScoreInBounds(int score, int lowerLevel, i
         playersInBoundzero = this->levelZero->playersInLevel;
         playersInBoundWithScorezero = this->levelZero->histInLevel[score - 1];
     }
-    *players = (double)((playersInBoundWithScorezero + playersInBoundWithScoreHigh - playersInBoundWithScoreLow) / (playersInBoundzero + playersInBoundHigh - playersInBoundLow));
+    *players = ((double)(playersInBoundWithScorezero + playersInBoundWithScoreHigh - playersInBoundWithScoreLow) / (playersInBoundzero + playersInBoundHigh - playersInBoundLow)) * 100;
 }
 
 void RankTree::GetNumOfPlayersWithScoreUnderLevel(std::shared_ptr<Node> root, int score, int level, int* total, int* playerWithScore) {
@@ -363,7 +364,7 @@ void RankTree::GetNumOfPlayersWithScoreUnderLevel(std::shared_ptr<Node> root, in
 void RankTree::AverageHighestPlayerLevelByGroup(int m, double * avgLevel) {
     int sumOfLevels = 0;
     RankTree::SumOfLevels(this->root, m, &sumOfLevels);
-    *avgLevel = (double)(sumOfLevels / m);
+    *avgLevel = ((double)sumOfLevels / m);
 }
 
 int RankTree::IntMax(int a, int b)
@@ -387,8 +388,10 @@ void RankTree::SumOfLevels(std::shared_ptr<Node> root, int m, int * sum) {
             m -= Node::GetNumPlayers(root->right);
             *sum += Node::GetSumLevels(root->right) + RankTree::IntMin(m, root->playersInLevel) * root->levelId;
             RankTree::SumOfLevels(root->left, m - RankTree::IntMin(m, root->playersInLevel), sum);
+            return;
         }
     }
+    return;
 }
 
 void RankTree::getPlayersBound(int score, int m, int * LowerBoundPlayers,int * HigherBoundPlayers) {
@@ -397,7 +400,7 @@ void RankTree::getPlayersBound(int score, int m, int * LowerBoundPlayers,int * H
     m = RankTree::getPlayersBoundHelper(this->root, score, m, LowerBoundPlayers, HigherBoundPlayers);
     if (m > 0) {
         *HigherBoundPlayers += RankTree::IntMin(m, this->levelZero->histInLevel[score - 1]);
-        *LowerBoundPlayers += RankTree::IntMin(0, (m - (this->levelZero->playersInLevel - this->levelZero->histInLevel[score - 1])));
+        *LowerBoundPlayers += RankTree::IntMax(0, (m - (this->levelZero->playersInLevel - this->levelZero->histInLevel[score - 1])));
     }
 }
 
@@ -413,11 +416,12 @@ int RankTree::getPlayersBoundHelper(std::shared_ptr<Node> root, int score, int m
             *HigherBoundPlayers += Node::GetHistInScore(root->right, score) + RankTree::IntMin(m, root->histInLevel[score - 1]);
             *LowerBoundPlayers += Node::GetHistInScore(root->right, score);
             if (m < root->playersInLevel)
-                *LowerBoundPlayers += RankTree::IntMin(0, (m - (root->playersInLevel - root->histInLevel[score - 1])));
+                *LowerBoundPlayers += RankTree::IntMax(0, (m - (root->playersInLevel - root->histInLevel[score - 1])));
             else
                 *LowerBoundPlayers = *HigherBoundPlayers;
             m -= RankTree::IntMin(m, root->playersInLevel);
             m = RankTree::getPlayersBoundHelper(root->left, score, m, LowerBoundPlayers, HigherBoundPlayers);
+            return m;
         }
     }
     return m;
@@ -431,6 +435,7 @@ void RankTree::ComputeExtra(std::shared_ptr<Node> root, int groupId) {
     RankTree::ComputeExtra(root->right, groupId);
     root->UpdateSelfData(groupId);
     root->UpdateData();
+    assert(root->playersInLevel == root->level->playersTable.size);
     return;
 }
 
@@ -448,7 +453,29 @@ std::shared_ptr<RankTree> RankTree::Merge(const RankTree& tree1, const RankTree&
     for (int i = 0; i < 200; i++)
         mergedRankTree->levelZero->histInLevel[i] = tree1.levelZero->histInLevel[i] + tree2.levelZero->histInLevel[i];
 
+    //-------------------------------tests-----------------------------
+    RankTree::testmerge1(mergedRankTree->root, tree1, tree2);
+    RankTree::testmerge2(tree1.root, mergedRankTree);
+    RankTree::testmerge2(tree2.root, mergedRankTree);
+
     return mergedRankTree; 
+}
+
+void RankTree::testmerge1(std::shared_ptr<Node> root, const RankTree& tree1, const RankTree& tree2) {
+    if (root == nullptr)
+        return;
+    
+    RankTree::testmerge1(root->left, tree1, tree2);
+    assert(tree1.Find(root->level->levelId) || tree2.Find(root->level->levelId));
+    RankTree::testmerge1(root->right, tree1, tree2);
+}
+void RankTree::testmerge2(std::shared_ptr<Node> root, std::shared_ptr<RankTree> merged) {
+    if (root == nullptr)
+        return;
+    
+    RankTree::testmerge2(root->left, merged);
+    assert(merged->Find(root->level->levelId));
+    RankTree::testmerge2(root->right, merged);
 }
 
 Helper* RankTree::MergeToArr(const RankTree& tree1, const RankTree& tree2)

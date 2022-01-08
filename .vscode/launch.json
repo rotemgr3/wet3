@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/main.exe",
-            "args": ["<", "test.in.txt"],
+            "args": ["<", "./wet2_tests_by_almog/without_playerbounds/input_0.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

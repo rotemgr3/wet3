@@ -1,0 +1,26 @@
+Init done.
+AddPlayer: SUCCESS
+GetPercentOfPlayersWithScoreInBounds: FAILURE
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+GetPlayersBound: 0 1
+GetPlayersBound: 0 1
+AddPlayer: INVALID_INPUT
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+IncreasePlayerIDLevel: INVALID_INPUT
+AddPlayer: SUCCESS
+IncreasePlayerIDLevel: SUCCESS
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+MergeGroups: SUCCESS
+IncreasePlayerIDLevel: SUCCESS
+AverageHighestPlayerLevelByGroup: 0.00
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+GetPlayersBound: INVALID_INPUT
+GetPlayersBound: 0 1
+AddPlayer: SUCCESS
+AddPlayer: SUCCESS
+GetPercentOfPlayersWithScoreInBounds: FAILURE
