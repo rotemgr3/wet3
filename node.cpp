@@ -24,7 +24,8 @@ void Node::UpdateSelfData(int groupId) {
         std::shared_ptr<ListNode<int, Player>> curr = this->level->playersTable.arr[i];
         while (curr) {
             this->histInLevel[((std::shared_ptr<Player>)(curr->data))->score - 1]++;
-            ((std::shared_ptr<Player>)(curr->data))->groupId = groupId;
+            if(groupId != -1)
+                ((std::shared_ptr<Player>)(curr->data))->groupId = groupId;
             curr = curr->next;
         }
     }

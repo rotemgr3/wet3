@@ -180,6 +180,7 @@ std::shared_ptr<Node> RankTree::RemoveAux(std::shared_ptr<Node>& root, int level
         return nullptr;
     
     root->height = IntMax(Node::GetHeight(root->left), Node::GetHeight(root->right)) + 1;
+    root->UpdateSelfData();
     root->UpdateData();
     int balanceFactor = Node::GetBF(root);
 
@@ -285,6 +286,7 @@ std::shared_ptr<Node> RankTree::InsertAux(std::shared_ptr<Node> root,
         root->left = RankTree::InsertAux(root->left, toInsert);
     
     root->height = IntMax(Node::GetHeight(root->left), Node::GetHeight(root->right)) + 1;
+    root->UpdateSelfData();
     root->UpdateData();
     int balanceFactor = Node::GetBF(root);
 
@@ -397,6 +399,7 @@ void RankTree::SumOfLevels(std::shared_ptr<Node> root, int m, int * sum) {
 void RankTree::getPlayersBound(int score, int m, int * LowerBoundPlayers,int * HigherBoundPlayers) {
     *HigherBoundPlayers = 0;
     *LowerBoundPlayers = 0;
+    
     m = RankTree::getPlayersBoundHelper(this->root, score, m, LowerBoundPlayers, HigherBoundPlayers);
     if (m > 0) {
         *HigherBoundPlayers += RankTree::IntMin(m, this->levelZero->histInLevel[score - 1]);

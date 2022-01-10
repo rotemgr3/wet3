@@ -28,7 +28,7 @@ class Node {
         static int GetNumPlayers(std::shared_ptr<Node> node);
         static int GetHistInScore(std::shared_ptr<Node> node, int score);
         void UpdateData();
-        void UpdateSelfData(int groupId);
+        void UpdateSelfData(int groupId = -1);
         Node& operator=(const Node& copy);
 };
 

@@ -32,7 +32,6 @@ PMStatusType PlayersManager::MergeGroups(int groupId1, int groupId2) {
 PMStatusType PlayersManager::AddPlayer(int playerId, int groupId, int score, int levelId) {
     if (groupId > this->k || groupId <= 0 || playerId <= 0 || score > this->scale || score <= 0)
         return PM_INVALID_INPUT;
-    
     if (this->allPlayers.IfExists(playerId))
         return PM_FAILURE;
 
@@ -46,6 +45,8 @@ PMStatusType PlayersManager::AddPlayer(int playerId, int groupId, int score, int
     } catch (std::bad_alloc& error) {
         return PM_ALLOCATION_ERROR;
     }
+
+    assert((this->allLevelsTree.root == nullptr) || (this->allLevelsTree.root->playersInLevel == this->allLevelsTree.root->level->playersTable.size));
     
     return PM_SUCCESS;
 }
@@ -63,7 +64,8 @@ PMStatusType PlayersManager::RemovePlayer(int playerId) {
     this->groups.Find(toRemove->groupId)->levelsTree->Remove(toRemove);
     this->groups.Find(toRemove->groupId)->numOfPlayers--;
 
-
+    assert((this->allLevelsTree.root == nullptr) || (this->allLevelsTree.root->playersInLevel == this->allLevelsTree.root->level->playersTable.size));
+    
     return PM_SUCCESS;
 }
 
@@ -84,6 +86,8 @@ PMStatusType PlayersManager::IncreasePlayerIDLevel(int playerId, int levelIncrea
     } catch (std::bad_alloc& error) {
         return PM_ALLOCATION_ERROR;
     }
+    
+    assert((this->allLevelsTree.root == nullptr) || (this->allLevelsTree.root->playersInLevel == this->allLevelsTree.root->level->playersTable.size));
     
     return PM_SUCCESS;
 }
@@ -106,13 +110,15 @@ PMStatusType PlayersManager::ChangePlayerIDScore(int playerId, int newScore) {
         return PM_ALLOCATION_ERROR;
     }
     
+    assert((this->allLevelsTree.root == nullptr) || (this->allLevelsTree.root->playersInLevel == this->allLevelsTree.root->level->playersTable.size));
+    
     return PM_SUCCESS;
 }
 
 PMStatusType PlayersManager::GetPercentOfPlayersWithScoreInBounds(int groupID, int score, int lowerLevel, int higherLevel, double * players) {
     if (groupID < 0 || groupID > this->k || players == nullptr)
         return PM_INVALID_INPUT;
-    
+        
     if (groupID == 0) {
         if (this->allLevelsTree.IsEmpty())
             return PM_FAILURE;
