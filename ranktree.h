@@ -41,9 +41,6 @@ class RankTree {
         static Helper* MergeToArr(const RankTree& tree1, const RankTree& tree2);
         static int getPlayersBoundHelper(std::shared_ptr<Node> root, int score, int m, int * LowerBoundPlayers,int * HigherBoundPlayers);
         static std::shared_ptr<RankTree> ArrToRankTree(Helper* helper, int size, int oldSize);
-        static void testmerge1(std::shared_ptr<Node> root, const RankTree& tree1, const RankTree& tree2);
-        static void testmerge2(std::shared_ptr<Node> root, std::shared_ptr<RankTree> merged);
-
 
     public:
         std::shared_ptr<Node> root;

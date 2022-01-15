@@ -5,7 +5,6 @@
 #include <memory>
 #include "listNode.h"
 #include <stdbool.h>
-#include <cassert>
 
 
 template <class keyT, class dataT>
@@ -110,7 +109,6 @@ void HashTable<keyT, dataT>::Insert(keyT key, std::shared_ptr<dataT>& data) {
     if (size == m)
         this->ChangeSize(true);
     
-    assert(this->Get(key) != nullptr);
 }
 
 template <class keyT, class dataT>
@@ -160,36 +158,6 @@ void HashTable<keyT, dataT>::ChangeSize(bool expand) {
             curr = curr->next;
         }
     }
-    //------------------------------tests-----------------------------------------------
-    for (int i = 0; i < m; i++) {
-        std::shared_ptr<ListNode<keyT, dataT>> curr = arr[i];
-        while (curr != nullptr) {
-                std::shared_ptr<ListNode<keyT, dataT>> currNew = newArr[curr->key % newM];
-                while (currNew != nullptr) {
-                    if (curr->key != currNew->key)
-                        currNew = currNew->next;
-                    else
-                        break;
-                }
-                assert(curr->key == currNew->key);
-            curr = curr->next;
-        }
-    }
-    for (int i = 0; i < newM; i++) {
-        std::shared_ptr<ListNode<keyT, dataT>> curr = newArr[i];
-        while (curr != nullptr) {
-                std::shared_ptr<ListNode<keyT, dataT>> currNew = arr[curr->key % m];
-                while (currNew != nullptr) {
-                    if (curr->key != currNew->key)
-                        currNew = currNew->next;
-                    else
-                        break;
-                }
-                assert(curr->key == currNew->key);
-            curr = curr->next;
-        }
-    }
-
     this->m = newM;
 
     delete [] this->arr;
@@ -214,33 +182,6 @@ std::shared_ptr<HashTable<keyT, dataT>> HashTable<keyT, dataT>::Merge(const Hash
             curr = curr->next;
         }
     }
-    //-----------------------tests-----------------------------------
-    for (int i = 0; i < merged->m; i++) {
-        std::shared_ptr<ListNode<keyT, dataT>> curr = merged->arr[i];
-        while (curr) {
-            assert(ht1.IfExists(curr->key) || ht2.IfExists(curr->key));
-            curr = curr->next;
-        }
-    }
-
-    for (int i = 0; i < ht1.m; i++) {
-        std::shared_ptr<ListNode<keyT, dataT>> curr = ht1.arr[i];
-        while (curr) {
-            assert(merged->IfExists(curr->key));
-            curr = curr->next;
-        }
-    }
-
-    for (int i = 0; i < ht2.m; i++) {
-        std::shared_ptr<ListNode<keyT, dataT>> curr = ht2.arr[i];
-        while (curr) {
-            assert(merged->IfExists(curr->key));
-            curr = curr->next;
-        }
-    }
-
-
-
     return merged;
 }
 
